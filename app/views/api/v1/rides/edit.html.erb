@@ -1,0 +1,11 @@
+<%= form_with model: @ride, local: true do |f|  %>
+
+<div class="feild">
+    <%= f.label :name %>
+    <%= f.text_field :name %>
+</div>
+<div class="actions">
+    <%= f.submit "Create Ride" %>
+</div>
+
+<% end %>

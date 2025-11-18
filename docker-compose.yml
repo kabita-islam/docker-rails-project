@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ride-booking-app
+    container_name: rails_app
+    command: bash -c "bundle install && ./bin/rails db:prepare && ./bin/rails s -b 0.0.0.0 -p 3000"
+    ports:
+      - "3000:3000"
+    environment:
+      RAILS_ENV: development
+      DATABASE_URL: postgres://postgres:password@db:5432/ride_booking_dev
+    volumes:
+      - .:/rails
+      - bundle_path:/usr/local/bundle
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14
+    container_name: rails_db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ride_booking_dev
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  bundle_path:

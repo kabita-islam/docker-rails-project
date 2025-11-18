@@ -1,0 +1,32 @@
+<% if flash.any? %>
+  <% flash.each do |msg| %>
+    <%= msg %>
+  <% end %>
+<% end %>
+
+<%= form_tag '/login', local: true do |form| %>
+<div class="field">
+    <%= label_tag :name %>
+    <%= text_field_tag :name %>
+</div>
+
+<div class="field">
+    <%= label_tag :password %>
+    <%= password_field_tag :password %>
+</div>
+
+<div class="actions">
+    <%= submit_tag "Log In" %>
+</div>
+
+<% end %>
+
+<%= form_with url: logout_path ,method: :delete do |f| %>
+<%= link_to 'logout'  %>
+<% end %>
+<br><br>
+<div style="display: flex; gap:10px;">
+
+<%= button_to 'all User', users_path, class: 'btn btn-primary' %>
+<%= link_to 'create User', new_user_path, class: 'btn btn-info'  %>
+</div>

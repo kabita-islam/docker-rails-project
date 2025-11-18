@@ -1,0 +1,12 @@
+<% flash.each do |msg| %>
+  <%= msg %>
+<% end %>
+Username: <%= @user.name %><br>
+Email : <%=  @user.email %>
+
+<%= form_with url: logout_path, method: :delete do |f| %>
+<%= submit_tag 'logout'  %>
+<% end %>
+
+<%= button_to 'all User', users_path, class: 'btn btn-primary' %>
+<%= link_to 'create User', new_user_path, class: 'btn btn-info'  %>
