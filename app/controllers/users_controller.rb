@@ -1,7 +1,7 @@
 class UsersController < ApplicationController
   include ApplicationHelper
 
-  before_action :authenticate_user
+  before_action :authenticate_user , except: [:new,:create]
   def index
     @users = User.all
   end
