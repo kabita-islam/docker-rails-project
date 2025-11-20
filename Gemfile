@@ -8,7 +8,7 @@ gem "sprockets-rails"
 gem "sqlite3", ">= 1.4"
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
-gem 'pry', '~> 0.14.1'
+gem 'pry', '~> 0.15.2'
 gem 'pg', '~> 1.6'
 
 gem 'jwt'
