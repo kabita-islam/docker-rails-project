@@ -10,6 +10,9 @@ gem "sqlite3", ">= 1.4"
 gem "puma", ">= 5.0"
 gem 'pry', '~> 0.14.1'
 gem 'pg', '~> 1.6'
+
+gem 'jwt'
+gem 'redis'
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 gem "importmap-rails"
 # Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
