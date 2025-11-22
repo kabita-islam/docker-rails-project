@@ -9,10 +9,10 @@ class SessionController < ApplicationController
         {
           user_id: user.id,
           exp: 1.minute.from_now.to_i
-        },Rails.application.credentials.secret_key_base
+        }, Rails.application.credentials.secret_key_base
       )
-      $redis.set("user:#{user.id}:token",token)
-      $redis.expire("user:#{user.id}:token",1.minute.to_i)
+      $redis.set("user:#{user.id}:token", token)
+      $redis.expire("user:#{user.id}:token", 1.minute.to_i)
       render json: {
         token: token
       },status: :ok
