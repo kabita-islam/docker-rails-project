@@ -1,37 +1,76 @@
 class SessionController < ApplicationController
   skip_before_action :verify_authenticity_token
+  before_action :authorize_request, only: [:logout]
+  skip_before_action :authorize_request, only: [:create, :refresh]
+
 
   def create
     user = User.find_by(name: params[:name])
     
     if user && user.authenticate(params[:password])
-      token = JWT.encode(
+      access_token = JWT.encode(
         {
           user_id: user.id,
           exp: 1.minute.from_now.to_i
-        }, Rails.application.credentials.secret_key_base
+        },
+        Rails.application.credentials.secret_key_base, 'HS256'
       )
-      $redis.set("user:#{user.id}:token", token)
-      $redis.expire("user:#{user.id}:token", 1.minute.to_i)
+
+      refresh_token = JWT.encode(
+        {
+          user_id: user.id,
+          exp: 5.minute.from_now.to_i
+        },
+        Rails.application.credentials.secret_key_base, 'HS256'
+      )
+      $redis.set("user:#{user.id}:access_token", access_token)
+      $redis.expire("user:#{user.id}:access_token", 1.minute.to_i)
+
+      $redis.set("user:#{user.id}:refresh_token", refresh_token)
+      $redis.expire("user:#{user.id}:refresh_token", 5.minute.to_i)
+
       render json: {
-        token: token
+        access_token: access_token,
+        refresh_token: refresh_token
       },status: :ok
-      # flash[:success] = "logged in successfully"
-      # session[:id] = user.id
-      # redirect_to user_path(user)
     else
       render json: { error: "Invalid credentials" },status: :unauthorized
-      # flash[:alert] = "Something is going wrong."
-      # render :login
     end
+  end
+
+
+  def refresh 
+      refresh_token = request.headers["Refresh-Token"]
+
+      decoded = JWT.decode(refresh_token, Rails.application.credentials.secret_key_base)[0]
+      user_id = decoded["user_id"]
+      saved_token = $redis.get("user:#{user_id}:refresh_token")
+
+      if saved_token != refresh_token
+        return render json: { error: "Invalid Refresh Token" }, status: :unauthorized
+      end
+
+      new_access_token = JWT.encode(
+        {
+          user_id: user_id,
+          exp: 1.minute.from_now.to_i
+        },Rails.application.credentials.secret_key_base
+      )
+
+      render json: { access_token: new_access_token }
+
+      $redis.set("user:#{user_id}:access_token", new_access_token)
+      $redis.expire("user:#{user_id}:access_token", 1.minute.to_i)
+
+    rescue JWT::ExpiredSignature
+      render json: {error: "Token has expired" }, status: :unauthorized
+    rescue JWT::DecodeError
+      render json: { error: "Invalid Token" },status: :unauthorized
   end
 
   def logout
     user_id = @current_user.id
-    $redis.del("user:#{user_id}:token")
+    $redis.del("user:#{user_id}:access_token")
     render json: {message: "Logged out"}, status: :ok
-    # session[:id] = nil
-    # flash[:success] = "logged out successfully"
-    # redirect_to root_path
   end
 end

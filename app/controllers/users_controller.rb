@@ -1,7 +1,9 @@
 class UsersController < ApplicationController
-  include ApplicationHelper
+  # include ApplicationHelper
 
-  before_action :authenticate_user , except: [:new,:create]
+  # before_action :authenticate_user , except: [:new,:create]
+  skip_before_action :verify_authenticity_token
+
   def index
     @users = User.all
   end
