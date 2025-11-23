@@ -5,8 +5,8 @@ Rails.application.routes.draw do
   post '/refresh', to: 'session#refresh'
 
   resources :users
-  
-  post '/login', to: 'session#create'
+
+  post '/login', to: 'session#login'
   delete '/logout', to: 'session#logout'
 
   namespace :api do

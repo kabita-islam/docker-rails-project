@@ -1,10 +1,10 @@
 class SessionController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :authorize_request, only: [:logout]
-  skip_before_action :authorize_request, only: [:create, :refresh]
+  skip_before_action :authorize_request, only: [:login, :refresh]
 
 
-  def create
+  def login
     user = User.find_by(name: params[:name])
     
     if user && user.authenticate(params[:password])
